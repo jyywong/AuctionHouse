@@ -1,3 +1,46 @@
 from django.db import models
-
+from django.contrib.auth.models import User
+from decimal import Decimal
 # Create your models here.
+class Book(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField()
+    classes = models.CharField(max_length=100)
+    subject = models.CharField(max_length=100, default='N/A')
+    author = models.CharField(max_length=255, default='N/A')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Book')
+    quantity = models.IntegerField(default = 1)
+    quality_choices=[
+        ('New', 'New'),
+        ('LUsed', 'Lightly Used'),
+        ('Used', 'Used'),
+        ('Damaged', 'Damaged')
+    ]
+    quality = models.CharField(
+        max_length= 100,
+        choices=quality_choices,
+        default= 'Used'
+    )
+    status_choices=[
+        ('Buy', 'Buy'),
+        ('Sell', 'Sell'),
+        ('Inactive', 'Inactive')
+    ]
+    status = models.CharField(
+        max_length= 100,
+        choices = status_choices,
+        default = 'Inactive'
+    )
+
+class Order(models.Model):
+    bschoices = [
+        ('buy', 'buy'),
+        ('sell', 'sell')
+    ]
+    buyorsell = models.CharField(
+        max_length = 50,
+        choices = bschoices
+    )
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='Order')
+    price = models.IntegerField()
+    quantity = models.IntegerField()

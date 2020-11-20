@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<div class="container ">
+<div class="row justify-content-center">
+
+
+
+<div class="card" style="width: 30rem;">
+  <div class="card-body">
+    <h3 class="card-title">Log in</h3>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "includes/form.html" %}
+      <button type="submit" name="button" class="btn btn-success btn-block"> Log in </button>
+    </form>
+  </div>
+  <div class="card-footer text-muted text-center">
+    Don't have an account? <a href="{% url 'signup' %}"> Sign Up </a>
+  </div>
+</div>
+</div>
+</div>
+
+
+{% endblock content %}
