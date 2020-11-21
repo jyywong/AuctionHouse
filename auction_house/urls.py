@@ -21,9 +21,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name="home"),
     path('listview', views.list, name="listview"),
-    path('results', views.search, name="search"),
+    path('book_results', views.search_books, name="search_books"),
+    path('order_results', views.search_orders, name="search_orders"),
     path('login', auth_views.LoginView.as_view(template_name="login.html"), name='login'),
     path('signup', views.signup, name='signup'),
-    path('logout',auth_views.LogoutView.as_view(), name='logout')
+    path('logout',auth_views.LogoutView.as_view(), name='logout'),
+    path('book_view/<int:pk>', views.book_view, name="book_view"),
+    path('new_book_instance', views.new_book_instance, name="new_book_instance"),
+    path('library', views.library, name="library"),
+    path('add_order', views.add_order, name="add_order"),
+    path('order_library', views.order_library, name="order_library")
 
 ]

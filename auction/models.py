@@ -8,7 +8,12 @@ class Book(models.Model):
     classes = models.CharField(max_length=100)
     subject = models.CharField(max_length=100, default='N/A')
     author = models.CharField(max_length=255, default='N/A')
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Book')
+    isbn = models.CharField(max_length=13, default='0000000000000')
+    def __str__(self):
+        return self.name
+class BookInstance(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='Book')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='BookInstance')
     quantity = models.IntegerField(default = 1)
     quality_choices=[
         ('New', 'New'),
@@ -32,6 +37,9 @@ class Book(models.Model):
         default = 'Inactive'
     )
 
+    def __str__(self):
+        return self.book.name
+
 class Order(models.Model):
     bschoices = [
         ('buy', 'buy'),
@@ -41,6 +49,6 @@ class Order(models.Model):
         max_length = 50,
         choices = bschoices
     )
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='Order')
-    price = models.IntegerField()
+    book = models.ForeignKey(BookInstance, on_delete=models.CASCADE, related_name='Order')
+    price = models.DecimalField(max_digits=5, decimal_places=2)
     quantity = models.IntegerField()

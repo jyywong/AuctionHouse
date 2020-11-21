@@ -32,11 +32,11 @@
   <tbody>
     {% for book in books %}
     <tr>
-      <td class="text-center"> <a href="{% url 'book_view' book.id %}">{{book.name}}</a></td>
-      <td class="text-center"> {{book.description}}</td>
-      <td class="text-center"> {{book.author }}</td>
-      <td class="text-center"> {{book.classes }}</td>
-      <td class="text-center"> {{book.subject }}</td>
+      <td class="text-center"> <a href="{% url 'book_view' book.id %}">{{book.book.name}}</a></td>
+      <td class=""> {{book.book.description}}</td>
+      <td class="text-center"> {{book.book.author }}</td>
+      <td class="text-center"> {{book.book.classes }}</td>
+      <td class="text-center"> {{book.book.subject }}</td>
 
     </tr>
     {% endfor %}
