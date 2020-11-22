@@ -27,27 +27,30 @@ def search_orders(request):
     query = request.GET.get('q')
     if not query:
         query = " "
-    results = Order.objects.filter(Q(book__book__name__icontains=query))
+    results = Order.objects.filter(Q(book__name__icontains=query))
     return render(request, template, {'orders': results})
 
 def book_view(request, pk):
     template = 'book_display.html'
     book = Book.objects.get(id=pk)
-    buyorders = Order.objects.filter(book__book = book).filter(buyorsell='buy')
-    sellorders = Order.objects.filter(book__book = book).filter(buyorsell='sell')
-    return render(request, template, {'book': book, 'buyorders' : buyorders, 'sellorders': sellorders})
+    buyorders = Order.objects.filter(book = book).filter(buyorsell='Buy')
+    sellorders = Order.objects.filter(book = book).filter(buyorsell='Sell')
+    order_type = [buyorders, sellorders]
+    return render(request, template, {'book': book, 'order_type':order_type, 'buyorders':buyorders, 'sellorders':sellorders})
 
 @login_required
 def library(request):
     books = BookInstance.objects.filter(owner = request.user)
     return render(request, 'library.html', {'books':books})
 
+@login_required
 def order_library(request):
     template = 'order_library.html'
     owner = request.user
-    buyorders = Order.objects.filter(book__owner = owner).filter(buyorsell='buy')
-    sellorders = Order.objects.filter(book__owner = owner).filter(buyorsell='sell')
-    return render(request, template, {'user':owner, 'buyorders': buyorders, 'sellorders':sellorders})
+    buyorders = Order.objects.filter(order_owner = owner).filter(buyorsell='Buy')
+    sellorders = Order.objects.filter(order_owner = owner).filter(buyorsell='Sell')
+    order_type = [buyorders, sellorders]
+    return render(request, template, {'user':owner, 'order_type':order_type})
 
 @login_required
 def new_book_instance(request):
@@ -57,7 +60,18 @@ def new_book_instance(request):
         if form.is_valid():
             object = form.save(commit=False)
             object.owner = request.user
-            object.save()
+            try:
+                existing_book = BookInstance.objects.get(
+                    book = object.book,
+                    owner = object.owner,
+                    quality = object.quality,
+                    status = object.status
+                )
+                existing_book.quantity += object.quantity
+                existing_book.save()
+            except BookInstance.DoesNotExist:
+                None
+                object.save()
             form = BookInstanceForm()
             return render(request, 'new_book_instance.html', {'form': form})
     else:
@@ -70,13 +84,21 @@ def add_order(request):
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
-            form.save()
+            object = form.save(commit=False)
+            object.order_owner = request.user
+            object.save()
             form = OrderForm()
             return render(request, 'new_order.html', {'form': form})
     else:
         form = OrderForm()
     return render(request, 'new_order.html', {'form': form})
 
+def profile(request, pk):
+    user = User.objects.get(id=pk)
+    buyorders = Order.objects.filter(order_owner = user).filter(buyorsell='Buy')
+    sellorders = Order.objects.filter(order_owner = user).filter(buyorsell='Sell')
+    order_type = [buyorders, sellorders]
+    return render(request, 'order_library.html', {'user':user, 'order_type':order_type})
 
 def signup(request):
     form = UserCreationForm()

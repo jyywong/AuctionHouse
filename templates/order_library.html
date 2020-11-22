@@ -4,7 +4,7 @@
 <br>
 <br>
 <br>
-<!-- Book image card block -->
+<!-- User card block -->
 <div class="container">
     <div class="card bg-light ">
       <div class="text-center">
@@ -30,13 +30,14 @@
       </div>
   </div>
 </div>
-<!-- End of book image card block -->
+<!-- End of user card block -->
 
 
 
 <div class="container">
   <div class="row">
     <!-- Buy order table -->
+    {% for orders in order_type %}
     <div class="col-6">
       <div class="table-responsive">
       <table class="table table-sm table-hover mt-2">
@@ -48,65 +49,25 @@
         <thead class="thead-light text-center">
             <tr>
               <th> Book Name </th>
-              <th> Owner </th>
               <th> Quantity </th>
               <th> Quality </th>
               <th> Price </th>
-              <th> PM </th>
             </tr>
         </thead>
         <tbody>
-          {% for order in buyorders %}
+          {% for order in orders %}
           <tr>
-            <td class="text-center"> {{order.book.book.name }}</td>
-            <td class="text-center"> {{order.book.owner }}</td>
+            <td class="text-center"> {{order.book.name }}</td>
             <td class="text-center"> {{order.quantity}}</td>
-            <td class="text-center"> {{order.book.quality}}</td>
+            <td class="text-center"> </td>
             <td class="text-center"> ${{order.price}}</td>
-            <td class="text-center "><a class="btn btn-primary btn-sm href="#">Sell</a></td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       </div>
     </div>
-    <!-- End of buy order table -->
-    <!-- Sell order table -->
-    <div class="col-6">
-      <div class="table-responsive">
-
-
-      <table class="table table-sm table-hover mt-2">
-        <thead class="thead-dark text-center">
-          <tr>
-            <th colspan="10"> Sell Orders</th>
-          </tr>
-        </thead>
-        <thead class="thead-light text-center">
-            <tr>
-              <th> Book Name </th>
-              <th> Owner </th>
-              <th> Quantity </th>
-              <th> Quality </th>
-              <th> Price </th>
-              <th> PM </th>
-            </tr>
-        </thead>
-        <tbody>
-          {% for order in sellorders %}
-          <tr>
-            <td class="text-center"> {{order.book.book.name }}</td>
-            <td class="text-center"> {{order.book.owner }}</td>
-            <td class="text-center"> {{order.quantity}}</td>
-            <td class="text-center"> {{order.book.quality}}</td>
-            <td class="text-center"> ${{order.price}}</td>
-            <td class="text-center "><a class="btn btn-primary btn-sm href="#">Buy</a></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      </div>
-    </div>
+    {% endfor %}
     <!-- End of buy order table -->
   </div>
 </div>

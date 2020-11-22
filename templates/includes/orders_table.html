@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="row">
+      {% for orders in order_type %}
+      <div class="col-6">
+        <div class="table-responsive">
+        <table class="table table-sm table-hover mt-2">
+          <thead class="thead-dark text-center">
+            <tr>
+              <th colspan="10">{% if orders == buyorders %}Buy{% else %}Sell{% endif %} Orders</th>
+            </tr>
+          </thead>
+          <thead class="thead-light text-center">
+              <tr>
+                <th> Owner </th>
+                <th> Quantity </th>
+                <th> Quality </th>
+                <th> Price </th>
+                <th> PM </th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+            <tr>
+
+              <td class="text-center"> <a href="{% url 'profile' order.order_owner.id %}">{{order.order_owner }}</a></td>
+              <td class="text-center"> {{order.quantity}}</td>
+              <td class="text-center"> </td>
+              <td class="text-center"> ${{order.price}}</td>
+              <td class="text-center "><a class="btn btn-primary btn-sm href="#">{% if orders == buyorders %}Sell{% else %}Buy{% endif %}</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+      {% endfor %}
+  </div>
+</div>

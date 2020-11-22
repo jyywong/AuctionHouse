@@ -42,13 +42,16 @@ class BookInstance(models.Model):
 
 class Order(models.Model):
     bschoices = [
-        ('buy', 'buy'),
-        ('sell', 'sell')
+        ('Buy', 'Buy'),
+        ('Sell', 'Sell')
     ]
+
+
+    order_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Order_Owner')
     buyorsell = models.CharField(
         max_length = 50,
         choices = bschoices
     )
-    book = models.ForeignKey(BookInstance, on_delete=models.CASCADE, related_name='Order')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='Order')
     price = models.DecimalField(max_digits=5, decimal_places=2)
     quantity = models.IntegerField()

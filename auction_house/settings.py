@@ -130,6 +130,6 @@ STATICFILES_DIRS = [
 
 
 
-LOGIN_REDIRECT_URL ='home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL ='library'
+LOGOUT_REDIRECT_URL = 'search_books'
 LOGIN_URL = 'login'

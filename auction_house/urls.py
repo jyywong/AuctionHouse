@@ -19,7 +19,7 @@ from auction import views
 from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name="home"),
+    path('', views.search_books, name="home"),
     path('listview', views.list, name="listview"),
     path('book_results', views.search_books, name="search_books"),
     path('order_results', views.search_orders, name="search_orders"),
@@ -30,6 +30,7 @@ urlpatterns = [
     path('new_book_instance', views.new_book_instance, name="new_book_instance"),
     path('library', views.library, name="library"),
     path('add_order', views.add_order, name="add_order"),
-    path('order_library', views.order_library, name="order_library")
+    path('order_library', views.order_library, name="order_library"),
+    path('profile/<int:pk>', views.profile, name="profile")
 
 ]

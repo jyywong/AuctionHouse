@@ -13,3 +13,7 @@ class OrderForm(ModelForm):
     class Meta:
         model = Order
         fields = ['buyorsell', 'book', 'price', 'quantity']
+
+    def __init__(self, *args, **kwargs):
+        super(OrderForm, self).__init__( *args, **kwargs)
+        self.fields['book'].queryset = Book.objects.all()
