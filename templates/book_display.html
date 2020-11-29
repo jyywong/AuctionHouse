@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 <br>
 <br>
@@ -8,7 +8,7 @@
 <div class="container">
     <div class="card bg-light ">
       <div class="text-center">
-        <img class="card-img-top" src="" alt="Card image cap">
+        <img class="card-img-top mt-4" src="{% static 'pictures/textbook.png' %}" alt="Card image cap" style="width: 250px;height: 250px;">
       </div>
       <h1 class="card-title text-center"> {{book.name}}</h1>
       <p class="text-muted text-center"> by {{book.author}}</p>

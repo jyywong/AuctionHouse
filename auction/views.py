@@ -4,6 +4,7 @@ from django.views.generic import ListView
 from django.db.models import Q
 from auction.models import *
 from .forms import *
+from dmessages.forms import NewConversationForm
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
@@ -31,12 +32,30 @@ def search_orders(request):
     return render(request, template, {'orders': results})
 
 def book_view(request, pk):
+    form = NewConversationForm()
     template = 'book_display.html'
     book = Book.objects.get(id=pk)
     buyorders = Order.objects.filter(book = book).filter(buyorsell='Buy')
     sellorders = Order.objects.filter(book = book).filter(buyorsell='Sell')
     order_type = [buyorders, sellorders]
-    return render(request, template, {'book': book, 'order_type':order_type, 'buyorders':buyorders, 'sellorders':sellorders})
+    context = {
+        'book': book,
+        'order_type':order_type,
+        'buyorders':buyorders,
+        'sellorders':sellorders,
+        'form':form
+        }
+    if request.method == 'POST':
+        form = NewConversationForm(request.POST)
+        if form.is_valid():
+            object = form.save(commit=False)
+            object.created_by = request.user
+            object.save()
+            form = NewConversationForm()
+            return render(request, template, context)
+    else:
+        form = NewConversationForm()
+    return render(request, template, context)
 
 @login_required
 def library(request):

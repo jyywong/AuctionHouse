@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'auction',
     'widget_tweaks',
-    'django_extensions'
+    'django_extensions',
+    'dmessages'
 ]
 
 MIDDLEWARE = [

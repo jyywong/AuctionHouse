@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<br>
+<br>
+<div class="container ">
+<div class="row justify-content-center">
+<div class="card" style="width: 30rem;">
+  <div class="card-body">
+    <h3 class="card-title"> New Conversation </h3>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "includes/form.html" %}
+      <button type="submit" name="button" class="btn btn-success btn-block"> Add a book to your library </button>
+    </form>
+  </div>
+</div>
+</div>
+</div>
+
+
+{% endblock content %}

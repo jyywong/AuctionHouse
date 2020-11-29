@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+<br>
+<br>
+
+<div class="container border p-2">
+
+    <h2> Inbox </h2>
+
+
+  <!-- Tabs -->
+<div class="row">
+    <div class="col-4">
+      <div class="list-group" id="list-tab" >
+        <a class="list-group-item active" href="{% url 'new_conversation' %}"> New Conversation </a>
+        {% for conversation in conversations %}
+        <a class="list-group-item {% if conversation.id == pk %} active {% endif %}" id="list-home-list"  href="{% url 'inbox' conversation.id %}"  aria-controls="home">{{conversation.name}}</a>
+        {% endfor %}
+      </div>
+    </div>
+    <!-- End of tabs -->
+    <div class="col-8">
+      <div class="row justify-content-center">
+      <div class="card" >
+        <div class="card-body">
+          <h3 class="card-title"> New Conversation </h3>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% include "includes/form.html" %}
+            <button type="submit" name="button" class="btn btn-success btn-block"> Start a new conversation </button>
+          </form>
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+</div>
+{% endblock content %}

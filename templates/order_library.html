@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 <br>
 <br>
@@ -8,7 +8,7 @@
 <div class="container">
     <div class="card bg-light ">
       <div class="text-center">
-        <img class="card-img-top" src="" alt="Card image cap">
+        <img class="card-img-top mt-4" src="{% static 'pictures/profile.jpg' %}" alt="Card image cap" style="width: 200px;height: 200px;">
       </div>
       <h1 class="card-title text-center"> {{user.username}}</h1>
       <br>
@@ -16,7 +16,8 @@
         <div class="row">
           <div class="col-8">
           <h5 class="card-title mb-0"> Trustworthiness </h5>
-          <p class="text-muted"> </p>
+          <p class="text-muted"> 5/10</p>
+
           </div>
           <div class="col">
             <h5 class="card-title mb-0"> Orders </h5>
