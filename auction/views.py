@@ -8,12 +8,12 @@ from dmessages.forms import NewConversationForm
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
-def home(request):
-    return render (request, 'index.html')
+# def home(request):
+#     return render (request, 'index.html')
 
-def list(request):
-    books=Book.objects.all()
-    return render(request, 'item_list.html', {'books':books})
+# def list(request):
+#     books=Book.objects.all()
+#     return render(request, 'item_list.html', {'books':books})
 
 def search_books(request):
     template = 'item_list.html'

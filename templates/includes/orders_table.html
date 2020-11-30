@@ -1,8 +1,8 @@
 <div class="container">
   <div class="row">
-      {% for orders in order_type %}
-      <div class="col-6">
-        <div class="table-responsive">
+    {% for orders in order_type %}
+    <div class="col-6">
+      <div class="table-responsive">
         <table class="table table-sm table-hover mt-2">
           <thead class="thead-dark text-center">
             <tr>
@@ -10,13 +10,13 @@
             </tr>
           </thead>
           <thead class="thead-light text-center">
-              <tr>
-                <th> Owner </th>
-                <th> Quantity </th>
-                <th> Quality </th>
-                <th> Price </th>
-                <th> PM </th>
-              </tr>
+            <tr>
+              <th> Owner </th>
+              <th> Quantity </th>
+              <th> Quality </th>
+              <th> Price </th>
+              <th> PM </th>
+            </tr>
           </thead>
           <tbody>
             {% for order in orders %}
@@ -28,7 +28,7 @@
               <td class="text-center">
                 <!-- Ok, for some reason the modal only works when the variable is after #Modal (in the data-target) instead of before. No idea why -->
                 <button type="button" name="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Modal{{order.id}}">
-                {% if orders == buyorders %}Sell{% else %}Buy{% endif %}
+                  {% if orders == buyorders %}Sell{% else %}Buy{% endif %}
                 </button>
               </td>
             </tr>
@@ -58,9 +58,9 @@
             {% endfor %}
           </tbody>
         </table>
-        </div>
       </div>
-      {% endfor %}
+    </div>
+    {% endfor %}
 
   </div>
 </div>

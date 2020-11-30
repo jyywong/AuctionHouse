@@ -6,18 +6,19 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 # Create your views here.
 
+
 @login_required
 def new_conversation(request):
     template = 'new_conversation2.html'
     queryset = Conversation.objects.filter(
-        Q(created_by=request.user)|
+        Q(created_by=request.user) |
         Q(send_to=request.user)
     ).order_by('-modified_at')
     form = NewConversationForm()
 
     context = {
-        'conversations' : queryset,
-        'form' : form
+        'conversations': queryset,
+        'form': form
     }
 
     if request.method == 'POST':
@@ -27,10 +28,10 @@ def new_conversation(request):
             conversation.created_by = request.user
             conversation.save()
             Message.objects.create(
-                conversation = conversation,
-                sender = request.user,
-                receiver = form.cleaned_data.get('send_to'),
-                message = form.cleaned_data.get('message')
+                conversation=conversation,
+                sender=request.user,
+                receiver=form.cleaned_data.get('send_to'),
+                message=form.cleaned_data.get('message')
             )
             return redirect('inbox', pk=1)
     else:
@@ -75,26 +76,28 @@ the conversation ID via url pk in the tabs :/
 In the future: Learn JS and figure out how to give the conversation ID back to
 view without hardcoding.
 '''
+
+
 @login_required
 def inbox(request, pk):
 
     queryset = Conversation.objects.filter(
-        Q(created_by=request.user)|
+        Q(created_by=request.user) |
         Q(send_to=request.user)
     ).order_by('-modified_at')
     template = 'inbox3.html'
     messages = Message.objects.all()
     user = request.user
     form = MessageForm()
-    context ={
-        'conversations':queryset,
-        'messages':messages,
-        'pk':pk,
-        'user':user,
-        'form':form
+    context = {
+        'conversations': queryset,
+        'messages': messages,
+        'pk': pk,
+        'user': user,
+        'form': form
     }
 
-    if request.method =='POST':
+    if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
             form_object = form.save(commit=False)

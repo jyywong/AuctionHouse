@@ -6,16 +6,16 @@
 
 <div class="container border">
 
-    <h2> Inbox </h2>
+  <h2> Inbox </h2>
 
 
   <!-- Tabs -->
   <div class="row">
     <div class="col-4">
-      <div class="list-group" id="list-tab" >
+      <div class="list-group" id="list-tab">
         <a class="list-group-item bg-secondary text-white" href="{% url 'new_conversation' %}"> New Conversation </a>
         {% for conversation in conversations %}
-        <a class="list-group-item {% if conversation.id == pk %} active {% endif %}" id="list-home-list"  href="{% url 'inbox' conversation.id %}"  aria-controls="home">{{conversation.name}}</a>
+        <a class="list-group-item {% if conversation.id == pk %} active {% endif %}" id="list-home-list" href="{% url 'inbox' conversation.id %}" aria-controls="home">{{conversation.name}}</a>
         {% endfor %}
       </div>
     </div>
@@ -27,84 +27,86 @@
 
       <div class="tab-content" id="nav-tabContent">
         {% for conversation in conversations %}
-          {% if conversation.id == pk%}
-            <div class="row ml-1">
-              <h3>{{conversation.name}}</h3>
-            </div>
-            <div class="row ">
-              <div class="col">
-                <h5> Talking to: {% if conversation.created_by == request.user %} {{conversation.send_to}} {% else %} {{conversation.created_by}} {% endif %}</h5>
+        {% if conversation.id == pk%}
+        <div class="row ml-1">
+          <h3>{{conversation.name}}</h3>
+        </div>
+        <div class="row ">
+          <div class="col">
+            <h5> Talking to: {% if conversation.created_by == request.user %} {{conversation.send_to}} {% else %} {{conversation.created_by}} {% endif %}</h5>
+          </div>
+          <div class="col">
+            <h5 class="text-right"> Reason: {{conversation.reason}}</h5>
+          </div>
+        </div>
+
+
+        <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
+          <div class="container border overflow-auto" style="height:40rem;">
+            {% for message in messages %}
+            {% if message.conversation.id == pk %}
+            {% if message.sender == user %}
+            <div class="row">
+              <div class="col-7">
+                <div class="container border m-2">
+                  <p class="font-weight-bold mb-0"> {{message.sender}}:</p>
+                  {{message.message}}
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  <br>
+                  <p class=" small text-muted text-right m-0"> Sent at {{message.created_at}}</p>
+                </div>
               </div>
-              <div class="col">
-                <h5 class="text-right"> Reason: {{conversation.reason}}</h5>
-              </div>
             </div>
-
-
-            <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
-              <div class="container border overflow-auto" style="height:40rem;">
-                  {% for message in messages %}
-                    {% if message.conversation.id == pk %}
-                      {% if message.sender == user %}
-                        <div class="row">
-                          <div class="col-7">
-                            <div class="container border m-2" >
-                              <p class="font-weight-bold mb-0"> {{message.sender}}:</p>
-                              {{message.message}}
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            <br>
-                              <p class=" small text-muted text-right m-0"> Sent at {{message.created_at}}</p>
-                            </div>
-                          </div>
-                        </div>
-                      {% else %}
-                        <div class="row justify-content-end">
-                          <div class="col-7 align-self-end">
-                            <div class="container border m-2 " >
-                              <p class="font-weight-bold mb-0"> {{message.sender}}:</p>
-                              {{message.message}}
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            <br>
-                              <p class=" small text-muted text-right m-0"> Sent at {{message.created_at}}</p>
-                            </div>
-                          </div>
-                        </div>
-                      {% endif %}
-
-                    {% endif %}
-                  {% endfor %}
+            {% else %}
+            <div class="row justify-content-end">
+              <div class="col-7 align-self-end">
+                <div class="container border m-2 ">
+                  <p class="font-weight-bold mb-0"> {{message.sender}}:</p>
+                  {{message.message}}
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  <br>
+                  <p class=" small text-muted text-right m-0"> Sent at {{message.created_at}}</p>
+                </div>
               </div>
             </div>
             {% endif %}
+
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
         {% endfor %}
       </div>
     </div>
+  </div>
+
+  <!-- End of message window -->
+
+
+  <div class="row justify-content-end">
+    <div class="col-8">
+      <form class="form-group" method="POST">
+        {% csrf_token %}
+        <div class="input-group">
+          {% render_field form.message class="form-control" style="height:7rem;"%}
+          <span class="input-group-text">
+            <button class="btn d-flex " type="submit" name="button">
+              Send
+            </button>
+          </span>
+        </div>
+      </form>
     </div>
 
-    <!-- End of message window -->
-
-
-<div class="row justify-content-end">
-      <div class="col-8">
-        <form class="form-group" method="POST">
-          {% csrf_token %}
-          <div class="input-group">
-          {% render_field form.message class="form-control" style="height:7rem;"%}
-            <span class="input-group-text">
-              <button class="btn d-flex " type="submit" name="button">
-                Send
-              </button>
-            </span>
-          </div>
-        </form>
-      </div>
 
 
 
 
 
-
-          <!-- <div class="input-group">
+    <!-- <div class="input-group">
             <textarea class="form-control" aria-label="With textarea"></textarea>
             <div class="input-group-prepend">
               <span class="input-group-text">
@@ -115,7 +117,7 @@
               </span>
             </div>
           </div> -->
-      </div>
+  </div>
 </div>
 
 </div>
