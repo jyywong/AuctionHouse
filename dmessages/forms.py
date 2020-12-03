@@ -8,8 +8,7 @@ class MessageForm(ModelForm):
         model = Message
         fields = ['message']
 
-    def __init__(self, *args, **kwargs):
-        super(MessageForm, self).__init__(*args, **kwargs)
+
 
 class NewConversationForm(ModelForm):
     reason_choices=[
@@ -17,7 +16,7 @@ class NewConversationForm(ModelForm):
         ('Sell', 'I want to sell'),
         ('Other', 'Other')
     ]
-    message = forms.CharField(widget = forms.Textarea(), max_length=4000)
+    message = forms.CharField(widget = forms.Textarea(), max_length=4000, required=True)
     class Meta:
         model = Conversation
         fields = ['name', 'send_to', 'message', 'reason']

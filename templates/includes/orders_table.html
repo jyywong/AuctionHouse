@@ -43,7 +43,7 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    <form method="post">
+                    <form method="post" novalidate>
                       {% csrf_token %}
                       {% include 'includes/modal_form.html'%}
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
