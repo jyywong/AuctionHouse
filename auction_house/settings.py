@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'auction',
     'widget_tweaks',
     'django_extensions',
-    'dmessages'
+    'dmessages',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -128,7 +129,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
-
 
 
 LOGIN_REDIRECT_URL ='library'

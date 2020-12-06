@@ -31,6 +31,11 @@ urlpatterns = [
     path('add_order', views.add_order, name="add_order"),
     path('order_library', views.order_library, name="order_library"),
     path('profile/<int:pk>', views.profile, name="profile"),
-    path('messages/', include('dmessages.urls'))
+    path('messages/', include('dmessages.urls')),
+    path('api/', include('auction.api.urls'))
 
+]
+
+urlpatterns += [
+    path('api-auth', include('rest_framework.urls'))
 ]

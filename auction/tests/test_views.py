@@ -257,24 +257,22 @@ class BookViewBasicTests(BookViewTestCase):
 class BookViewTestSuccesfulConversation(BookViewTestCase):
     def setUp(self):
         super().setUp()
+        self.client.login(username='user1', password = self.password)
         self.response = self.client.post(self.url, {
             'name': 'Test Conversation 1',
-            'send_to': self.user1,
+            'send_to': self.user2.id,
             'message': 'Hello world',
             'reason': 'Buy'
         })
-    '''
-    These tests fail because the book view does not force a login. However,
-    I don't want this whole view to be login required. Just the form
-    submitting. Will get back to this later.
-    '''
-    # def test_book_view_created_conversation(self):
-    #     self.assertEquals(Conversation.objects.count(), 1)
-    # def test_book_view_created_message(self):
-    #     self.assertEquals(Message.objects.count(), 1)
+
+    def test_book_view_created_conversation(self):
+        self.assertEquals(Conversation.objects.count(), 1)
+    def test_book_view_created_message(self):
+        self.assertEquals(Message.objects.count(), 1)
 class BookViewTestInvalidConversation(BookViewTestCase):
     def setUp(self):
         super().setUp()
+        self.client.login(username='user1', password = self.password)
         self.response = self.client.post(self.url, {
         'name':''
         })

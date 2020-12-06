@@ -22,17 +22,6 @@ class BookInstance(models.Model):
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='BookInstance')
     quantity = models.IntegerField(default=1)
-    quality_choices = [
-        ('New', 'New'),
-        ('LUsed', 'Lightly Used'),
-        ('Used', 'Used'),
-        ('Damaged', 'Damaged')
-    ]
-    quality = models.CharField(
-        max_length=100,
-        choices=quality_choices,
-        default='Used'
-    )
     status_choices = [
         ('Buy', 'Buy'),
         ('Sell', 'Sell'),
@@ -53,7 +42,12 @@ class Order(models.Model):
         ('Buy', 'Buy'),
         ('Sell', 'Sell')
     ]
-
+    quality_choices = [
+        ('New', 'New'),
+        ('LUsed', 'Lightly Used'),
+        ('Used', 'Used'),
+        ('Damaged', 'Damaged')
+    ]
     order_owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='Order_Owner')
     buyorsell = models.CharField(
@@ -64,3 +58,8 @@ class Order(models.Model):
         Book, on_delete=models.CASCADE, related_name='Order')
     price = models.DecimalField(max_digits=5, decimal_places=2)
     quantity = models.IntegerField()
+    quality = models.CharField(
+        max_length=100,
+        choices=quality_choices,
+        default='Used'
+    )

@@ -3,24 +3,31 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import ListView
 from django.db.models import Q
 from auction.models import *
+from dmessages.models import Conversation, Message
 from .forms import *
 from dmessages.forms import NewConversationForm
 from django.contrib.auth.decorators import login_required
+
+
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from auction.api.serializers import BookSerializer, BookInstanceSerializer, OrderSerializer, UserSerializer
+from rest_framework import generics
+from rest_framework import permissions
+from auction.api.permissions import IsOwnerOrReadOnly
+
+
 # Create your views here.
 
-# def home(request):
-#     return render (request, 'index.html')
-
-# def list(request):
-#     books=Book.objects.all()
-#     return render(request, 'item_list.html', {'books':books})
-
 def search_books(request):
+
     template = 'item_list.html'
     query = request.GET.get('q')
     if not query:
         query = " "
     results = Book.objects.filter(Q(name__icontains=query))
+
     return render(request, template, {'books': results})
 
 def search_orders(request):
@@ -51,6 +58,12 @@ def book_view(request, pk):
             object = form.save(commit=False)
             object.created_by = request.user
             object.save()
+            Message.objects.create(
+                conversation=object,
+                sender=request.user,
+                receiver=form.cleaned_data.get('send_to'),
+                message=form.cleaned_data.get('message')
+            )
             form = NewConversationForm()
             return render(request, template, context)
     else:
@@ -131,3 +144,49 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form':form})
+
+class book_list(generics.ListCreateAPIView):
+    '''
+    List all books registered on the site, or register a new book
+    '''
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+
+class book_detail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    Retrieve, update, or delete a registered book
+    '''
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class book_instance_list(generics.ListCreateAPIView):
+    '''
+    List all books in user library
+    '''
+    queryset = BookInstance.objects.all()
+    serializer_class = BookInstanceSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+class book_instance_detail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    Retrieve, update, or delete a book in users library
+    '''
+    queryset = BookInstance.objects.all()
+    serializer_class = BookInstanceSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

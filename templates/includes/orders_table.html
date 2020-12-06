@@ -15,7 +15,9 @@
               <th> Quantity </th>
               <th> Quality </th>
               <th> Price </th>
+              {% if user.is_authenticated%}
               <th> PM </th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -23,14 +25,16 @@
             <tr>
               <td class="text-center"> <a href="{% url 'profile' order.order_owner.id %}">{{order.order_owner }}</a></td>
               <td class="text-center"> {{order.quantity}}</td>
-              <td class="text-center"> </td>
+              <td class="text-center"> {{order.quality}}</td>
               <td class="text-center"> ${{order.price}}</td>
+              {% if user.is_authenticated %}
               <td class="text-center">
                 <!-- Ok, for some reason the modal only works when the variable is after #Modal (in the data-target) instead of before. No idea why -->
                 <button type="button" name="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Modal{{order.id}}">
                   {% if orders == buyorders %}Sell{% else %}Buy{% endif %}
                 </button>
               </td>
+              {% endif %}
             </tr>
             <!-- Modals -->
             <div class="modal fade" id="Modal{{order.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
