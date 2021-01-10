@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import ListView
+from django.views.generic.detail import DetailView
 from django.db.models import Q
 from auction.models import *
 from dmessages.models import Conversation, Message
@@ -15,7 +16,7 @@ from rest_framework.response import Response
 from auction.api.serializers import BookSerializer, BookInstanceSerializer, OrderSerializer, UserSerializer
 from rest_framework import generics
 from rest_framework import permissions
-from auction.api.permissions import IsOwnerOrReadOnly
+from auction.api.permissions import IsOwnerOrReadOnly, IsOrderOwnerOrReadOnly
 
 
 # Create your views here.
@@ -39,7 +40,8 @@ def search_orders(request):
     return render(request, template, {'orders': results})
 
 def book_view(request, pk):
-    form = NewConversationForm()
+    convo_form = NewConversationForm()
+    order_form = OrderForm()
     template = 'book_display.html'
     book = Book.objects.get(id=pk)
     buyorders = Order.objects.filter(book = book).filter(buyorsell='Buy')
@@ -50,9 +52,10 @@ def book_view(request, pk):
         'order_type':order_type,
         'buyorders':buyorders,
         'sellorders':sellorders,
-        'form':form
+        'form':convo_form,
+        'order_form': order_form
         }
-    if request.method == 'POST':
+    if request.method == 'POST' and 'convo_form' in request.POST:
         form = NewConversationForm(request.POST)
         if form.is_valid():
             object = form.save(commit=False)
@@ -66,8 +69,17 @@ def book_view(request, pk):
             )
             form = NewConversationForm()
             return render(request, template, context)
+    elif request.method == 'POST' and 'order_form' in request.POST:
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            object = form.save(commit=False)
+            object.order_owner = request.user
+            object.save()
+            form = OrderForm()
+        return render(request, template, context)
     else:
         form = NewConversationForm()
+        order_form = OrderForm()
     return render(request, template, context)
 
 @login_required
@@ -129,9 +141,12 @@ def profile(request, pk):
     user = User.objects.get(id=pk)
     buyorders = Order.objects.filter(order_owner = user).filter(buyorsell='Buy')
     sellorders = Order.objects.filter(order_owner = user).filter(buyorsell='Sell')
+    totalorders = buyorders.count() + sellorders.count()
     order_type = [buyorders, sellorders]
-    return render(request, 'order_library.html', {'user':user, 'order_type':order_type})
-
+    return render(request, 'my_profile.html', {'user':user, 'order_type':order_type, 'order_total': totalorders})
+def my_profile(request):
+    template = "my_profile.html"
+    return render(request, template)
 def signup(request):
     form = UserCreationForm()
     if request.method == 'POST':
@@ -144,6 +159,32 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form':form})
+
+class book_statistics(DetailView):
+    model = Book
+    template_name = 'statistics.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        selected_book = Book.objects.get(id = self.kwargs['pk'])
+        context['dates'] = (Order.price_over_90_days(selected_book))[0]
+        context['num_orders'] = list(((Order.vol_over_90_days(selected_book))[1]).values())
+        order_prices_per_date = (Order.price_over_90_days(selected_book))[1]
+        context['average_prices'] = order_prices_per_date
+
+
+
+        return context
+
+
+
+
+
+
+
+'''
+API Views
+'''
 
 class book_list(generics.ListCreateAPIView):
     '''
@@ -181,6 +222,28 @@ class book_instance_detail(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+class order_list(generics.ListCreateAPIView):
+    '''
+    List all orders in user library
+    '''
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(order_owner=self.request.user)
+
+class order_detail(generics.RetrieveUpdateDestroyAPIView):
+    '''
+    Retrieve, update, or delete an order in users library
+    '''
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOrderOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(order_owner=self.request.user)
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()

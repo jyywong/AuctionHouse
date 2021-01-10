@@ -20,6 +20,9 @@ class Conversation(models.Model):
     send_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Conversation')
     reason = models.CharField(max_length=100, choices=reason_choices, default='Other')
     # Need a created by field
+    def last_message (self):
+        return Message.objects.filter(conversation=self).last()
+
 class Message(models.Model):
 
 

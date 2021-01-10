@@ -87,6 +87,8 @@ def inbox(request, pk):
     ).order_by('-modified_at')
     template = 'inbox3.html'
     messages = Message.objects.all()
+    convo_messages = Message.objects.filter(conversation = pk).order_by('created_at')
+    last_message = convo_messages.last()
     user = request.user
     form = MessageForm()
     context = {
@@ -94,7 +96,8 @@ def inbox(request, pk):
         'messages': messages,
         'pk': pk,
         'user': user,
-        'form': form
+        'form': form,
+        'last_message': last_message
     }
 
     if request.method == 'POST':

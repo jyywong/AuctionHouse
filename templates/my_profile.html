@@ -6,7 +6,7 @@
 <br>
 <!-- User card block -->
 <div class="container">
-    <div class="card bg-light ">
+    <div class="card bg-light">
       <div class="text-center">
         <img class="card-img-top mt-4" src="{% static 'pictures/profile.jpg' %}" alt="Card image cap" style="width: 200px;height: 200px;">
       </div>
@@ -14,26 +14,21 @@
       <br>
       <div class="container">
         <div class="row">
-          <div class="col-8">
+          <div class="col-2 mt-auto">
           <h5 class="card-title mb-0"> Trustworthiness </h5>
-          <p class="text-muted"> 5/10</p>
 
           </div>
-          <div class="col">
+          <div class="col-2 mt-auto">
             <h5 class="card-title mb-0"> Orders </h5>
-            <p class="text-muted">{{order_total}} </p>
           </div>
-          <div class="col">
+          <div class="col-2 mt-auto">
             <h5 class="card-title mb-0"> Other  </h5>
-            <p class="text-muted"> </p>
           </div>
+          <div class="col-6"></div>
         </div>
       </div>
   </div>
 </div>
-<!-- End of user card block -->
-
-
 
 <div class="container">
   <div class="row">
@@ -44,7 +39,9 @@
       <table class="table table-sm table-hover mt-2">
         <thead class="thead-dark text-center">
           <tr>
-            <th colspan="10"> Buy Orders</th>
+            <!-- Why doesn't this work, it works in orders_table? -->
+            <!-- {% if orders == buyorders %}Buy{% else %}Sell{% endif %} Orders -->
+            <th colspan="10"> </th>
           </tr>
         </thead>
         <thead class="thead-light text-center">
@@ -53,6 +50,7 @@
               <th> Quantity </th>
               <th> Quality </th>
               <th> Price </th>
+              <th></th>
             </tr>
         </thead>
         <tbody>
@@ -62,6 +60,20 @@
             <td class="text-center"> {{order.quantity}}</td>
             <td class="text-center"> {{order.quality}}</td>
             <td class="text-center"> ${{order.price}}</td>
+            <td>
+              <div class="col">
+
+              
+                <div class="row">
+                  <a href="#" class="btn btn-primary p-1 py-0"> Edit </a>
+                  <a href="#" class="btn btn-danger p-1  py-0"> Delete </a>
+                </div>
+                <div class="row">
+                  <a href="#" class="btn btn-outline-warning p-1 py-0">{% if orders == buyorders %}Bought{% else %}Sold{% endif %}</a>
+                  <a href="#" class="btn btn-outline-secondary p-1 py-0">Invisible </a>
+                </div>
+              </div>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -72,6 +84,5 @@
     <!-- End of buy order table -->
   </div>
 </div>
-
 
 {% endblock content %}

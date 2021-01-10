@@ -1,6 +1,10 @@
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from decimal import Decimal
+from datetime import date
+import datetime 
+import random
 # Create your models here.
 
 
@@ -63,3 +67,66 @@ class Order(models.Model):
         choices=quality_choices,
         default='Used'
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    '''
+    Methods for displaying statistics
+    '''
+    @staticmethod
+    def vol_over_90_days(book):
+        '''
+        Get all orders within a 90 day period
+        '''
+        date_difference = datetime.timedelta(days = 90)
+        selected_book = book
+        qs_filtered = Order.objects.filter(Q(book = selected_book) & Q(created_at__range = (date.today() - date_difference, (date.today() + datetime.timedelta(days=1)))))
+        qs_filtered_ordered = qs_filtered.order_by('created_at')
+        '''
+        Organize data to be plotted out in a graph
+        '''
+        unique_dates = []
+        num_orders = {}
+        format = "%b %d, %Y, %I:%M%p"
+        for order in qs_filtered_ordered:
+            if order.created_at.strftime(format) not in unique_dates:
+                unique_dates.append(order.created_at.strftime(format))
+                num_orders[order.created_at.strftime(format)] = 1
+            else:
+                num_orders[order.created_at.strftime(format)] += 1
+
+        return unique_dates, num_orders
+    @staticmethod
+    def price_over_90_days(book):
+        '''
+        Get all orders within a 90 day period
+        '''
+        date_difference = datetime.timedelta(days = 90)
+        selected_book = book
+        qs_filtered = Order.objects.filter(Q(book = selected_book) & Q(created_at__range = (date.today() - date_difference, date.today() + datetime.timedelta(days=1))))
+        print(date.today() - date_difference)
+        print('qs_filtered= ')
+        print(type(qs_filtered[1].created_at))
+        qs_filtered_ordered = qs_filtered.order_by('created_at')
+        '''
+        Organize data to be plotted out in a graph
+        '''
+        unique_dates = []
+        order_prices_per_date = {}
+        format = "%b %d, %Y, %I:%M%p"
+        for order in qs_filtered_ordered:
+            if order.created_at.date().strftime(format) not in unique_dates:
+                unique_dates.append(order.created_at.date().strftime(format))
+                order_prices_per_date[order.created_at.date().strftime(format)] = [order.price]
+            else:
+                order_prices_per_date[order.created_at.date().strftime(format)].append(order.price)
+        # print(list(order_prices_per_date.values()))
+        print('unique_dates')
+        print(unique_dates)
+        averages = []
+        for day in order_prices_per_date.values():
+            print(day)
+            averages.append(sum(day)/len(day))
+            print(averages)
+        return unique_dates, averages
+
+

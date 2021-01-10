@@ -32,6 +32,8 @@ urlpatterns = [
     path('order_library', views.order_library, name="order_library"),
     path('profile/<int:pk>', views.profile, name="profile"),
     path('messages/', include('dmessages.urls')),
+    path('book_view/<int:pk>/statistics', views.book_statistics.as_view(), name="stats"),
+    path('my_profile', views.my_profile, name="my_profile"),
     path('api/', include('auction.api.urls'))
 
 ]

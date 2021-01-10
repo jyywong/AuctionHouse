@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block stylesheet %}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.22/af-2.3.5/b-1.6.5/b-colvis-1.6.5/b-html5-1.6.5/b-print-1.6.5/cr-1.5.3/fc-3.3.2/kt-2.5.3/r-2.2.6/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"/>
 
 {% endblock stylesheet%}
 {% block content %}
 <br>
 <br>
 
-<div class="container">
+<div class="container mt-4">
 <div class="row justify-content-center">
 
   <div class="container">
@@ -17,7 +18,7 @@
         <div class="container mb-2">
           <div class="row justify-content-center">
           <form action="{% url 'search_books'%}" method="GET">
-            <input class="form-control" style="width: 30rem; "name="q" value="{{request.GET.q}}" placeholder="Search books">
+            <input class="form-control" id="mainSearch" style="width: 30rem; "name="q" value="{{request.GET.q}}" placeholder="Search books">
             <button type="submit" class="btn btn-success btn-block"> Search </button>
           </form>
           </div>
@@ -34,6 +35,7 @@
 <table id = "table_id" class="table table-hover mt-2">
   <thead class="thead-light text-center">
       <tr>
+        <th></th>
         <th> Book Name </th>
         <th> Description </th>
         <th> Author </th>
@@ -44,9 +46,10 @@
   </thead>
   <tbody>
     {% for book in books %}
-    <tr>
+    <tr style="max-height: 10rem;">
+      <td><img src="{% static 'pictures/textbook.png' %}" style="width: 100px;height: 100px;" alt=""></td>
       <td class="text-center"> <a href="{% url 'book_view' book.id %}">{{book.name}}</a></td>
-      <td class="text-center"> {{book.description}}</td>
+      <td class="text-center"> {{book.description|truncatechars:200}}</td>
       <td class="text-center"> {{book.author }}</td>
       <td class="text-center"> {{book.classes }}</td>
       <td class="text-center"> {{book.subject }}</td>
@@ -59,17 +62,16 @@
 {% endblock content %}
 
 {% block js %}
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 <script>
 
-  $(document).ready( function (){
-  $('#table_id').DataTable({
-
-    dom: 'B<"clear">lfrtip',
-    buttons: {
-      name:'primary',
-      buttions: ['copy', 'csv', 'excel', 'pdf']
-    }
-  })
-  })
+$(document).ready( function () {
+    $('#table_id').DataTable({
+      dom:'lrtp'
+    });
+} );
+$('#mainSearch').keyup(function(){
+  $('#table_id').DataTable.search($(this).val()).draw()
+})
 </script>
 {% endblock js%}

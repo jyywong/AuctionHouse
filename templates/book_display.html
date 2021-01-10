@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block stylesheet %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"/>
+
+{% endblock stylesheet%}
 {% block content %}
 <br>
 <br>
 <br>
 <!-- Book image card block -->
 <div class="container">
-  <div class="card bg-light ">
+  <div class="card bg-light  ">
     <div class="text-center">
       <img class="card-img-top mt-4" src="{% static 'pictures/textbook.png' %}" alt="Card image cap" style="width: 250px;height: 250px;">
     </div>
@@ -27,11 +31,102 @@
           <h5 class="card-title mb-0"> Subjects </h5>
           <p class="text-muted"> {{book.subject}}</p>
         </div>
+        <div class="col">
+          <p class="text-muted"><a href="{% url 'stats' book.pk%}" class="btn btn-primary"> Stats </a></p>
+        </div>
       </div>
     </div>
   </div>
 </div>
 <!-- End of book image card block -->
 {% include 'includes/orders_table.html'%}
+{% if user.is_authenticated %}
+<div class="fixed-bottom">
+  <div class="container-fluid ">
+    <div class="row justify-content-end">
+      <!-- <a href="{% url 'add_order' %}" class="btn btn-success btn-lg rounded-4 mb-5 mr-5" >Add order</a> -->
+      <button class="btn btn-success btn-lg rounded-4 mb-5 mr-5" type="button" data-toggle="modal" data-target="#add_order"> Place an order </button>
+    </div>
+  </div>
+</div>
+{% endif %}
 
+<!-- Add order modal form  -->
+<div class="modal fade" id="add_order" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"> Place an order </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+          {% csrf_token %}
+          {% include 'includes/order_modal_form.html' %}
+          <button type="submit" name="order_form" class="btn btn-primary">Place Order</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- End modal form -->
 {% endblock content %}
+
+{% block js %}
+<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+<script src="//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready( function () {
+    $('#buy').DataTable({
+      dom:'lrtp',
+      scrollY: 400
+    }
+    );
+} );
+$(document).ready( function () {
+    $('#sell').DataTable({
+      dom:'lrtp',
+      scrollY: 400
+    }
+    );
+} );
+</script>
+<script>
+  const buyOrdersTable = document.querySelector('#buy')
+  const sellOrdersTable = document.querySelector('#sell')
+  buyOrdersTable.addEventListener('click', (e) => {
+    
+    const orderOwner = e.target.parentElement.parentElement.firstElementChild.nextElementSibling.textContent
+    const orderID = e.target.parentElement.parentElement.lastElementChild.previousElementSibling.value
+    const currentModal = document.querySelector(`#Modal${orderID}`)
+    const sendToValue = currentModal.querySelector('select[name="send_to"]')
+    const sendToOptions = [...(currentModal.querySelector('select[name="send_to"]').options)]
+    console.log(orderOwner)
+    for (const option of sendToOptions) {
+      if (option.textContent.trim() == orderOwner.trim()) {
+        console.log(sendToOptions)
+        sendToValue.selectedIndex = sendToOptions.indexOf(option)
+      }
+    }
+  })
+  sellOrdersTable.addEventListener('click', (e) => {
+    const orderOwner = e.target.parentElement.parentElement.firstElementChild.nextElementSibling.textContent
+    const orderID = e.target.parentElement.parentElement.lastElementChild.previousElementSibling.value
+    const currentModal = document.querySelector(`#Modal${orderID}`)
+    const sendToValue = currentModal.querySelector('select[name="send_to"]')
+    const sendToOptions = [...(currentModal.querySelector('select[name="send_to"]').options)]
+    
+    for (const option of sendToOptions) {
+      if (option.textContent.trim() == orderOwner.trim()) {
+        console.log(sendToOptions)
+        sendToValue.selectedIndex = sendToOptions.indexOf(option)
+      }
+    }
+  })
+</script>
+
+{% endblock js %}

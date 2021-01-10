@@ -19,6 +19,7 @@ class BookInstanceSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    order_owner = serializers.ReadOnlyField(source='order_owner.username')
     class Meta:
         model = Order
         fields = ['order_owner', 'buyorsell',

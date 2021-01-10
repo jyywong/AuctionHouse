@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<br>
+<br>
+<br>
+<!-- Book image card block -->
+<div class="container">
+  <div class="card bg-light ">
+    <div class="text-center">
+      <img class="card-img-top mt-4" src="{% static 'pictures/textbook.png' %}" alt="Card image cap" style="width: 250px;height: 250px;">
+    </div>
+    <h1 class="card-title text-center"> {{book.name}}</h1>
+    <p class="text-muted text-center"> by {{book.author}}</p>
+    <br>
+    <div class="container">
+      <div class="row">
+        <div class="col-8">
+          <h5 class="card-title mb-0"> Description </h5>
+          <p class="text-muted"> {{book.description}}</p>
+        </div>
+        <div class="col">
+          <h5 class="card-title mb-0"> Classes </h5>
+          <p class="text-muted"> {{book.classes}}</p>
+        </div>
+        <div class="col">
+          <h5 class="card-title mb-0"> Subjects </h5>
+          <p class="text-muted"> {{book.subject}}</p>
+        </div>
+        <div class="col">
+            <a href="{% url 'book_view' book.pk%}" class="btn btn-primary">Orders</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container mt-2">
+    <div class="card">
+        <div class="card-header">
+            <h2>Price/Volume Chart</h2>
+        </div>
+        <div class="container">
+            <canvas id="priceChart" width="200" height="75"></canvas>
+        </div>
+        <div class="container">
+            <canvas id="volumeChart" width="200" height="75"></canvas>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+<script>
+    var ctx1 = document.getElementById('volumeChart').getContext('2d');
+    var myChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: [{% for date in dates %}"{{date}}",{% endfor %}],
+            datasets: [{
+                label: 'Orders',
+                data: [{% for num in num_orders %}{{num}},{% endfor %}],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    var ctx2 = document.getElementById('priceChart').getContext('2d');
+    var myChart = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: [{% for date in dates %}"{{date}}",{% endfor %}],
+            datasets: [{
+                label: 'Price',
+                data: [{% for day in average_prices %}{{day}},{% endfor %}],
+                backgroundColor: [
+                    'rgba(63, 63, 191, 0.2)',],
+                borderColor: [
+                    'rgba(63, 63, 191, 1)',],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    </script>
+{% endblock js %}
