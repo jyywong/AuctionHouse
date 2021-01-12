@@ -29,6 +29,7 @@ urlpatterns = [
     path('new_book_instance', views.new_book_instance, name="new_book_instance"),
     path('library', views.library, name="library"),
     path('add_order', views.add_order, name="add_order"),
+    path('delete_order/<int:pk>', views.delete_order.as_view(), name='delete_order'),
     path('order_library', views.order_library, name="order_library"),
     path('profile/<int:pk>', views.profile, name="profile"),
     path('messages/', include('dmessages.urls')),

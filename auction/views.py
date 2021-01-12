@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import DeleteView
 from django.db.models import Q
 from auction.models import *
 from dmessages.models import Conversation, Message
 from .forms import *
 from dmessages.forms import NewConversationForm
 from django.contrib.auth.decorators import login_required
-
+from django.urls import reverse_lazy
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -22,14 +23,24 @@ from auction.api.permissions import IsOwnerOrReadOnly, IsOrderOwnerOrReadOnly
 # Create your views here.
 
 def search_books(request):
-
+    form = BookForm()
     template = 'item_list.html'
     query = request.GET.get('q')
     if not query:
         query = " "
     results = Book.objects.filter(Q(name__icontains=query))
+    context = {
+        'books': results,
+        'form' : form
+    }
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render (request,template,context)
 
-    return render(request, template, {'books': results})
+
+    return render(request, template, context)
 
 def search_orders(request):
     template = 'order_list.html'
@@ -81,6 +92,7 @@ def book_view(request, pk):
         form = NewConversationForm()
         order_form = OrderForm()
     return render(request, template, context)
+
 
 @login_required
 def library(request):
@@ -137,16 +149,34 @@ def add_order(request):
         form = OrderForm()
     return render(request, 'new_order.html', {'form': form})
 
+class delete_order(DeleteView):
+    model = Order
+    success_url = reverse_lazy('my_profile')
+    template_name = 'order_check_delete.html'
+
+
 def profile(request, pk):
-    user = User.objects.get(id=pk)
+    profile_user = User.objects.get(id=pk)
+    buyorders = Order.objects.filter(order_owner = profile_user).filter(buyorsell='Buy')
+    sellorders = Order.objects.filter(order_owner = profile_user).filter(buyorsell='Sell')
+    totalorders = buyorders.count() + sellorders.count()
+    order_type = [buyorders, sellorders]
+    return render(request, 'order_library.html', {'profile_user':profile_user, 'order_type':order_type, 'order_total': totalorders})
+def my_profile(request):
+    user = request.user
     buyorders = Order.objects.filter(order_owner = user).filter(buyorsell='Buy')
     sellorders = Order.objects.filter(order_owner = user).filter(buyorsell='Sell')
     totalorders = buyorders.count() + sellorders.count()
     order_type = [buyorders, sellorders]
-    return render(request, 'my_profile.html', {'user':user, 'order_type':order_type, 'order_total': totalorders})
-def my_profile(request):
-    template = "my_profile.html"
-    return render(request, template)
+    context = {
+        'user':user, 
+        'order_type':order_type, 
+        'order_total': totalorders,
+        'buyorders': buyorders,
+        'sellorders':sellorders
+        }
+    
+    return render(request, 'my_profile.html', context)
 def signup(request):
     form = UserCreationForm()
     if request.method == 'POST':
@@ -167,10 +197,9 @@ class book_statistics(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         selected_book = Book.objects.get(id = self.kwargs['pk'])
-        context['dates'] = (Order.price_over_90_days(selected_book))[0]
-        context['num_orders'] = list(((Order.vol_over_90_days(selected_book))[1]).values())
-        order_prices_per_date = (Order.price_over_90_days(selected_book))[1]
-        context['average_prices'] = order_prices_per_date
+        context['num_orders'] = list(Order.vol_over_90_days(selected_book).values())
+        context['average_prices'] = Order.price_over_90_days(selected_book)
+        context['past_90'] = Order.get_past_90_days()
 
 
 

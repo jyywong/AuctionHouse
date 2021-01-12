@@ -41,11 +41,11 @@
 <!-- End of book image card block -->
 {% include 'includes/orders_table.html'%}
 {% if user.is_authenticated %}
-<div class="fixed-bottom">
+<div class="fixed-bottom" style="pointer-events: none;">
   <div class="container-fluid ">
     <div class="row justify-content-end">
       <!-- <a href="{% url 'add_order' %}" class="btn btn-success btn-lg rounded-4 mb-5 mr-5" >Add order</a> -->
-      <button class="btn btn-success btn-lg rounded-4 mb-5 mr-5" type="button" data-toggle="modal" data-target="#add_order"> Place an order </button>
+      <button class="btn btn-success btn-lg rounded-4 mb-5 mr-5" type="button" data-toggle="modal" data-target="#add_order" style="pointer-events: all;"> Place an order </button>
     </div>
   </div>
 </div>
@@ -82,18 +82,20 @@
 <script>
 $(document).ready( function () {
     $('#buy').DataTable({
-      dom:'lrtp',
-      scrollY: 400
+      dom:'lrtpB',
+      scrollY: 400,
     }
     );
 } );
 $(document).ready( function () {
     $('#sell').DataTable({
-      dom:'lrtp',
-      scrollY: 400
+      dom:'lrtpB',
+      scrollY: 400,
     }
     );
 } );
+
+
 </script>
 <script>
   const buyOrdersTable = document.querySelector('#buy')

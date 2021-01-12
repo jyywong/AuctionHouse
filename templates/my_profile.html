@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
+
+{% block stylesheet %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"/>
+{% endblock stylesheet %}
 {% block content %}
 <br>
 <br>
@@ -35,15 +39,14 @@
     <!-- Buy order table -->
     {% for orders in order_type %}
     <div class="col-6">
+      <div class="card-header border my-2">
+        <h3 class="text-center">
+          {% if orders == buyorders %}Buy{% else %}Sell{% endif %} Orders
+        </h3>
+      </div>
       <div class="table-responsive">
-      <table class="table table-sm table-hover mt-2">
-        <thead class="thead-dark text-center">
-          <tr>
-            <!-- Why doesn't this work, it works in orders_table? -->
-            <!-- {% if orders == buyorders %}Buy{% else %}Sell{% endif %} Orders -->
-            <th colspan="10"> </th>
-          </tr>
-        </thead>
+
+      <table id="{% if orders == buyorders %}buy{% else %}sell{% endif %}" class="table table-sm table-hover mt-2">
         <thead class="thead-light text-center">
             <tr>
               <th> Book Name </th>
@@ -62,15 +65,9 @@
             <td class="text-center"> ${{order.price}}</td>
             <td>
               <div class="col">
-
-              
                 <div class="row">
-                  <a href="#" class="btn btn-primary p-1 py-0"> Edit </a>
-                  <a href="#" class="btn btn-danger p-1  py-0"> Delete </a>
-                </div>
-                <div class="row">
-                  <a href="#" class="btn btn-outline-warning p-1 py-0">{% if orders == buyorders %}Bought{% else %}Sold{% endif %}</a>
-                  <a href="#" class="btn btn-outline-secondary p-1 py-0">Invisible </a>
+                  <button class="btn btn-primary p-1 py-0" data-toggle="modal" data-target="#editModal"> Edit </button>
+                  <a href="{% url 'delete_order' order.pk %}" class="btn btn-danger p-1  py-0"> Delete </a>
                 </div>
               </div>
             </td>
@@ -84,5 +81,49 @@
     <!-- End of buy order table -->
   </div>
 </div>
+<div class="modal" id="editModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Future order editing features to be implemented.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 {% endblock content %}
+
+{% block js %}
+<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+<script src="//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready( function () {
+    $('#buy').DataTable({
+      dom:'lrtpB',
+      scrollY: 400,
+    }
+    );
+} );
+</script>
+<script>
+  $(document).ready( function () {
+    $('#sell').DataTable({
+      dom:'lrtpB',
+      scrollY: 400,
+    }
+    );
+} );
+</script>
+{% endblock js %}

@@ -37,7 +37,7 @@
 <div class="container mt-2">
     <div class="card">
         <div class="card-header">
-            <h2>Price/Volume Chart</h2>
+            <h2>Price/Volume for Past 90 Days</h2>
         </div>
         <div class="container">
             <canvas id="priceChart" width="200" height="75"></canvas>
@@ -57,7 +57,7 @@
     var myChart = new Chart(ctx1, {
         type: 'line',
         data: {
-            labels: [{% for date in dates %}"{{date}}",{% endfor %}],
+            labels: [{% for date in past_90 %}"{{date}}",{% endfor %}],
             datasets: [{
                 label: 'Orders',
                 data: [{% for num in num_orders %}{{num}},{% endfor %}],
@@ -72,7 +72,9 @@
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        autoSkip: true,
+                        maxTicksLimit: 20
                     }
                 }]
             }
@@ -82,7 +84,7 @@
     var myChart = new Chart(ctx2, {
         type: 'line',
         data: {
-            labels: [{% for date in dates %}"{{date}}",{% endfor %}],
+            labels: [{% for date in past_90 %}"{{date}}",{% endfor %}],
             datasets: [{
                 label: 'Price',
                 data: [{% for day in average_prices %}{{day}},{% endfor %}],
