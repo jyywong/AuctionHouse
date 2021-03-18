@@ -9,6 +9,9 @@ import random
 
 
 class Book(models.Model):
+    '''
+    The Book class creates an entry on the website of an existence of a book
+    '''
     name = models.CharField(max_length=50)
     description = models.TextField()
     classes = models.CharField(max_length=100)
@@ -21,6 +24,10 @@ class Book(models.Model):
 
 
 class BookInstance(models.Model):
+    '''
+    Unnecesary model. Wanted to implement a sort of library for each user but decided that it wouldn't add much value to the website.
+    Could delete, but it might mess up a lot of stuff.
+    '''
     book = models.ForeignKey(
         Book, on_delete=models.CASCADE, related_name='Book')
     owner = models.ForeignKey(
@@ -42,6 +49,9 @@ class BookInstance(models.Model):
 
 
 class Order(models.Model):
+    '''
+    Each order is tied to the owner of the order, and the book this order is made for
+    '''
     bschoices = [
         ('Buy', 'Buy'),
         ('Sell', 'Sell')
@@ -81,64 +91,72 @@ class Order(models.Model):
             past_90.append(start + datetime.timedelta(days = i))
         return past_90
     @staticmethod
-    def vol_over_90_days(book):
+    def get_orders_90_days(book):
         '''
         Get all orders within a 90 day period
         '''
         date_difference = datetime.timedelta(days = 90)
         selected_book = book
-        qs_filtered = Order.objects.filter(Q(book = selected_book) & Q(created_at__range = (date.today() - date_difference, (date.today() + datetime.timedelta(days=1)))))
-        qs_filtered_ordered = qs_filtered.order_by('created_at')
-
         '''
-        Organize data to be plotted out in a graph
+        qs_filtered selects all orders for the given book that were created in the past 90 days
+        '''
+        qs_filtered = Order.objects.filter(
+            Q(book = selected_book) & 
+                Q(created_at__range = 
+                    (date.today() - date_difference, 
+                    (date.today() + datetime.timedelta(days=1))))
+            )
+
+        qs_filtered_ordered = qs_filtered.order_by('created_at')
+        return qs_filtered_ordered
+
+
+
+
+    '''
+    Methods for organizing data to be plotted out in chart.js
+    '''
+    @staticmethod
+    def vol_over_90_days(book):
+        qs_filtered_ordered = Order.get_orders_90_days(book)
+        '''
+        num_orders is a dictionary that has a key for each date for the past 90 days.
+        Each date has a number associated with that date which is the # of orders for that date
+        I used a dictionary in this case because there may or may not be orders on a certain date, or there may be mulitple orders on a certain date.
+        If I used a list or an array, it would have been more difficult to deal with multiple orders on a date or no orders
         '''
         past_90 = Order.get_past_90_days()
         num_orders = dict((day, 0) for day in past_90)
+        
         for order in qs_filtered_ordered:
             for key in num_orders:
-                    # print('key')
-                    # print(key)
-                    # print('ordercreatedat')
-                    # print(order.created_at.date)
                     if key == order.created_at.date():
                         num_orders[key] += 1
         return  num_orders
     @staticmethod
     def price_over_90_days(book):
+        qs_filtered_ordered = Order.get_orders_90_days(book)
         '''
-        Get all orders within a 90 day period
+        Organizing data to be plotted out in a graph:
+  
+        prices_per_day is a dictionary with each date for the past 90 days as a key.
+        Each date has an empty list to begin.
         '''
-        date_difference = datetime.timedelta(days = 90)
-        selected_book = book
-        qs_filtered = Order.objects.filter(Q(book = selected_book) & Q(created_at__range = (date.today() - date_difference, date.today() + datetime.timedelta(days=1))))
-        qs_filtered_ordered = qs_filtered.order_by('created_at')
-        '''
-        Organize data to be plotted out in a graph
-        '''
-        # unique_dates = []
-        # order_prices_per_date = {}
-        # format = "%b %d, %Y, %I:%M%p"
-        # for order in qs_filtered_ordered:
-        #     if order.created_at.date().strftime(format) not in unique_dates:
-        #         unique_dates.append(order.created_at.date().strftime(format))
-        #         order_prices_per_date[order.created_at.date().strftime(format)] = [order.price]
-        #     else:
-        #         order_prices_per_date[order.created_at.date().strftime(format)].append(order.price)
-        # # print(list(order_prices_per_date.values()))
-        # print('unique_dates')
-        # print(unique_dates)
-        # averages = []
-        # for day in order_prices_per_date.values():
-
-        #     averages.append(sum(day)/len(day))
-
         past_90 = Order.get_past_90_days()
         prices_per_day = dict((day, []) for day in past_90)
+
+        '''
+        Below, we go through every order in the past 90 days for this book.
+        For each date, we append the price of each order within a date to the empty list associated with each key/date.
+        '''
         for order in qs_filtered_ordered:
             for key in prices_per_day:
                     if key == order.created_at.date():
                         prices_per_day[key].append(order.price)
+
+        '''
+        We now calculate the average price of the book on each day for the past 90 days and append this to a new list.
+        '''
         averages = []
         for day in prices_per_day.values():
             if day:

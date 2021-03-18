@@ -25,6 +25,10 @@ from auction.api.permissions import IsOwnerOrReadOnly, IsOrderOwnerOrReadOnly
 def search_books(request):
     form = BookForm()
     template = 'item_list.html'
+
+    '''
+    Gets what search term is put into the search bar, and displays only the book that match the search term
+    '''
     query = request.GET.get('q')
     if not query:
         query = " "
@@ -33,6 +37,10 @@ def search_books(request):
         'books': results,
         'form' : form
     }
+    '''
+    Allows a book to be created in the system.
+    Doesn't work right now.
+    '''
     if request.method == 'POST':
         form = BookForm(request.POST)
         if form.is_valid():
@@ -42,6 +50,9 @@ def search_books(request):
 
     return render(request, template, context)
 
+'''
+Displays recent orders and allows user to search through them by name of book
+'''
 def search_orders(request):
     template = 'order_list.html'
     query = request.GET.get('q')
@@ -50,6 +61,13 @@ def search_orders(request):
     results = Order.objects.filter(Q(book__name__icontains=query))
     return render(request, template, {'orders': results})
 
+'''
+Displays information about book as well as, 2 tables for both buy and sell orders for this book.
+You can also click on an order to send a message to the order owner to initiate a conversation.
+
+Both forms on this page only show up for those who are logged in but this is done in the template.
+For security reasons this should probably be done elsewhere, but I don't know how.
+'''
 def book_view(request, pk):
     convo_form = NewConversationForm()
     order_form = OrderForm()
@@ -66,6 +84,15 @@ def book_view(request, pk):
         'form':convo_form,
         'order_form': order_form
         }
+    '''
+    We use "and 'convo_form'" as a way to distinguish between 2 different forms available on this view.
+        Convo_form and order_form are name attributes attached to the submit button for each form.
+    
+    In this block, we create a conversation that will house the messages between the two users.
+        The conversation houses the messages but we still need to create a first message for the conversation.
+        The form (NewConversationForm) creates the conversation, and we take the individual elements to create
+        an actual message within the conversation with Message.objects.create
+    '''
     if request.method == 'POST' and 'convo_form' in request.POST:
         form = NewConversationForm(request.POST)
         if form.is_valid():
@@ -80,6 +107,10 @@ def book_view(request, pk):
             )
             form = NewConversationForm()
             return render(request, template, context)
+    
+    # In this block, we create a new order. 
+    # Ideally, the order should be tied to the book the page is displaying, but that would require more javascript that I am not experienced in.
+          
     elif request.method == 'POST' and 'order_form' in request.POST:
         form = OrderForm(request.POST)
         if form.is_valid():
@@ -93,12 +124,17 @@ def book_view(request, pk):
         order_form = OrderForm()
     return render(request, template, context)
 
-
+'''
+Old idea that could be removed. Doesn't add much to website
+'''
 @login_required
 def library(request):
     books = BookInstance.objects.filter(owner = request.user)
     return render(request, 'library.html', {'books':books})
 
+'''
+Replaced  by 'my_profile' view
+'''
 @login_required
 def order_library(request):
     template = 'order_library.html'
@@ -108,6 +144,9 @@ def order_library(request):
     order_type = [buyorders, sellorders]
     return render(request, template, {'user':owner, 'order_type':order_type})
 
+'''
+Old idea that could be removed. Doesn't add much to website
+'''
 @login_required
 def new_book_instance(request):
     form = BookInstanceForm()
@@ -162,6 +201,10 @@ def profile(request, pk):
     totalorders = buyorders.count() + sellorders.count()
     order_type = [buyorders, sellorders]
     return render(request, 'order_library.html', {'profile_user':profile_user, 'order_type':order_type, 'order_total': totalorders})
+
+'''
+View to see your own orders, edit, and delete orders as you choose
+'''    
 def my_profile(request):
     user = request.user
     buyorders = Order.objects.filter(order_owner = user).filter(buyorsell='Buy')
@@ -177,6 +220,7 @@ def my_profile(request):
         }
     
     return render(request, 'my_profile.html', context)
+
 def signup(request):
     form = UserCreationForm()
     if request.method == 'POST':
@@ -190,6 +234,9 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'signup.html', {'form':form})
 
+'''
+Used a class based generic view for practice
+'''
 class book_statistics(DetailView):
     model = Book
     template_name = 'statistics.html'
