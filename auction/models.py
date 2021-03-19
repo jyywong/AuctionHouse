@@ -77,7 +77,7 @@ class Order(models.Model):
         choices=quality_choices,
         default='Used'
     )
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     '''
     Methods for displaying statistics
