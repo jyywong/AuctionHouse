@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -10,7 +12,7 @@ from .forms import *
 from dmessages.forms import NewConversationForm
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
-
+import json
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -253,9 +255,17 @@ class book_statistics(DetailView):
         return context
 
 
-
-
-
+def api_book_stats_vol(request, pk):
+    book = Book.objects.get(id = pk)
+    num_orders = json.dumps(Order.vol_over_90_days(book))
+    # avg_prices = json.dumps(Order.price_over_90_days(book))
+    # past_90 = json.dumps(Order.get_past_90_days())
+    return HttpResponse(num_orders, content_type = 'application/json')
+    
+def api_book_stats_prices(request, pk):
+    book = Book.objects.get(id = pk)
+    avg_prices = json.dumps(Order.price_over_90_days(book))
+    return HttpResponse(avg_prices, content_type = 'application/json')
 
 
 '''
@@ -276,6 +286,20 @@ class book_detail(generics.RetrieveUpdateDestroyAPIView):
     '''
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
+class book_orders(generics.ListCreateAPIView):
+    '''
+    List all orders pertaining to specific book
+    '''
+    serializer_class = OrderSerializer
+    
+    def get_queryset(self):
+        bookid = self.kwargs['pk']
+        queryset = Order.objects.filter(book__id = bookid)
+        return queryset
+
+
+
 
 class book_instance_list(generics.ListCreateAPIView):
     '''
@@ -298,6 +322,8 @@ class book_instance_detail(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
 
 class order_list(generics.ListCreateAPIView):
     '''

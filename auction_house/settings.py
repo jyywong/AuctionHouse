@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['boiling-ridge-27764.herokuapp.com','127.0.0.1']
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 # Application definition
 
@@ -42,10 +44,13 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'django_extensions',
     'dmessages',
-    'rest_framework'
+    'rest_framework',
+    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -54,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'auction_house.urls'
@@ -135,3 +141,4 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL ='search_books'
 LOGOUT_REDIRECT_URL = 'search_books'
 LOGIN_URL = 'login'
+

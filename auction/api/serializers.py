@@ -6,16 +6,18 @@ from django.contrib.auth.models import User
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['name', 'description',
+        fields = ['id', 'name', 'description',
                   'classes', 'subject', 'author', 'isbn']
 
 
 class BookInstanceSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username') 
 
     class Meta:
         model = BookInstance
         fields = ['book', 'owner', 'quantity', 'status']
+
+
 
 
 class OrderSerializer(serializers.ModelSerializer):

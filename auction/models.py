@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from decimal import Decimal
 from datetime import date
+from django.utils import timezone
 import datetime 
 import random
 # Create your models here.
@@ -77,7 +78,7 @@ class Order(models.Model):
         choices=quality_choices,
         default='Used'
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default = timezone.now())
 
     '''
     Methods for displaying statistics
@@ -88,7 +89,7 @@ class Order(models.Model):
         today = date.today()
         start = date.today() - datetime.timedelta(days = 90)
         for i in range(datetime.timedelta(days=90).days):
-            past_90.append(start + datetime.timedelta(days = i))
+            past_90.append((start + datetime.timedelta(days = i)).strftime("%d/%m/%Y"))
         return past_90
     @staticmethod
     def get_orders_90_days(book):
@@ -130,7 +131,7 @@ class Order(models.Model):
         
         for order in qs_filtered_ordered:
             for key in num_orders:
-                    if key == order.created_at.date():
+                    if key == order.created_at.date().strftime("%d/%m/%Y"):
                         num_orders[key] += 1
         return  num_orders
     @staticmethod
@@ -151,18 +152,20 @@ class Order(models.Model):
         '''
         for order in qs_filtered_ordered:
             for key in prices_per_day:
-                    if key == order.created_at.date():
+                    if key == order.created_at.date().strftime("%d/%m/%Y"):
                         prices_per_day[key].append(order.price)
 
         '''
         We now calculate the average price of the book on each day for the past 90 days and append this to a new list.
         '''
-        averages = []
+
         for day in prices_per_day.values():
             if day:
-                averages.append(sum(day)/len(day))
+                newday = int(sum(day)/len(day))
+                day.clear()
+                day.append(newday)
             else:
-                averages.append(0)
-        return  averages
+                day.append(0)
+        return  prices_per_day
 
 
