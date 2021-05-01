@@ -16,7 +16,7 @@ import json
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from auction.api.serializers import BookSerializer, BookInstanceSerializer, OrderSerializer, UserSerializer
+from auction.api.serializers import BookSerializer, BookInstanceSerializer, OrderSerializer, UserSerializer, RegisterUserSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from auction.api.permissions import IsOwnerOrReadOnly, IsOrderOwnerOrReadOnly
@@ -254,6 +254,9 @@ class book_statistics(DetailView):
 
         return context
 
+'''
+API Views
+'''
 
 def api_book_stats_vol(request, pk):
     book = Book.objects.get(id = pk)
@@ -267,10 +270,19 @@ def api_book_stats_prices(request, pk):
     avg_prices = json.dumps(Order.price_over_90_days(book))
     return HttpResponse(avg_prices, content_type = 'application/json')
 
-
-'''
-API Views
-'''
+@api_view(['POST',])
+def api_registration_view(request):
+    serializer = RegisterUserSerializer(data = request.data)
+    data = {}
+    if serializer.is_valid():
+        new_user = serializer.save()
+        data['response'] = 'Succesfully created new user'
+        data['username'] = new_user.username
+        data['email'] = new_user.email
+        
+    else:
+        data = serializer.errors
+    return Response(data)
 
 class book_list(generics.ListCreateAPIView):
     '''

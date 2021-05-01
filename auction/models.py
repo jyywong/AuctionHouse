@@ -165,7 +165,7 @@ class Order(models.Model):
                 day.clear()
                 day.append(newday)
             else:
-                day.append(0)
+                day.append(None) 
         return  prices_per_day
 
 
