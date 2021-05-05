@@ -304,12 +304,14 @@ class book_orders(generics.ListCreateAPIView):
     List all orders pertaining to specific book
     '''
     serializer_class = OrderSerializer
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
     def get_queryset(self):
         bookid = self.kwargs['pk']
         queryset = Order.objects.filter(book__id = bookid)
         return queryset
-
+    def perform_create(self, serializer):
+        serializer.save(order_owner=self.request.user)
 
 
 
@@ -343,7 +345,7 @@ class order_list(generics.ListCreateAPIView):
     '''
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(order_owner=self.request.user)
@@ -367,3 +369,11 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class UserOrders(generics.ListAPIView):
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        userid = self.kwargs['pk']
+        queryset = Order.objects.filter(order_owner=userid)
+        return queryset
