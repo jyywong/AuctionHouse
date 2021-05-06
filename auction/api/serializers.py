@@ -22,10 +22,11 @@ class BookInstanceSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     order_owner = serializers.ReadOnlyField(source='order_owner.username')
+    order_owner_id = serializers.ReadOnlyField(source='order_owner.id')
     book_name = serializers.ReadOnlyField(source='book.name')
     class Meta:
         model = Order
-        fields = ['order_owner','id', 'buyorsell',
+        fields = ['order_owner','order_owner_id','id', 'buyorsell',
                   'book', 'price', 'quantity', 'quality', 'book_name']
 
 
