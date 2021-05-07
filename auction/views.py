@@ -16,7 +16,7 @@ import json
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from auction.api.serializers import BookSerializer, BookInstanceSerializer, OrderSerializer, UserSerializer, RegisterUserSerializer
+from auction.api.serializers import BookSerializer, BookInstanceSerializer, OrderSerializer, UserSerializer, RegisterUserSerializer, ConversationSerializer, MessageSerializer
 from rest_framework import generics
 from rest_framework import permissions
 from auction.api.permissions import IsOwnerOrReadOnly, IsOrderOwnerOrReadOnly
@@ -376,4 +376,20 @@ class UserOrders(generics.ListAPIView):
     def get_queryset(self):
         userid = self.kwargs['pk']
         queryset = Order.objects.filter(order_owner=userid)
+        return queryset
+
+class UserConversations(generics.ListAPIView):
+    serializer_class= ConversationSerializer
+
+    def get_queryset(self):
+        userid = self.kwargs['pk']
+        queryset = Conversation.objects.filter(Q(created_by = userid)| Q(send_to = userid) )
+        return queryset
+
+class ConversationMessages(generics.ListCreateAPIView):
+    serializer_class= MessageSerializer
+
+    def get_queryset(self):
+        conv_id = self.kwargs['pk']
+        queryset = Message.objects.filter(conversation=conv_id)
         return queryset

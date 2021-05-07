@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from auction.models import Book, BookInstance, Order
+from dmessages.models import Conversation, Message
 from django.contrib.auth.models import User
 
 
@@ -61,4 +62,17 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         new_user.set_password(password)
         new_user.save()
         return new_user
-       
+
+class ConversationSerializer(serializers.ModelSerializer):
+    send_to_username = serializers.ReadOnlyField(source='send_to.username')
+    created_by_username = serializers.ReadOnlyField(source='created_by.username')
+    class Meta: 
+        model = Conversation
+        fields = ['id', 'send_to','send_to_username',  'created_by', 'created_by_username']
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender_username = serializers.ReadOnlyField(source='sender.username')
+    receiver_username = serializers.ReadOnlyField(source='receiver.username')
+    class Meta:
+        model = Message
+        fields = ['conversation', 'sender','sender_username', 'receiver_username', 'receiver', 'created_at', 'message']

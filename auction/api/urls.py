@@ -18,6 +18,8 @@ urlpatterns = [
     path('orders/', views.order_list.as_view()),
     path('orders/<int:pk>', views.order_detail.as_view()),
     path('user_orders/<int:pk>', views.UserOrders().as_view()),
+    path('user_conversations/<int:pk>', views.UserConversations().as_view()),
+    path('conversation_messages/<int:pk>', views.ConversationMessages().as_view()),
     path('users/', views.UserList.as_view()),
     path('users/<int:pk>/', views.UserDetail.as_view()),
     path('users/register/', views.api_registration_view),
