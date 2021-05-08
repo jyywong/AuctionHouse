@@ -66,13 +66,20 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 class ConversationSerializer(serializers.ModelSerializer):
     send_to_username = serializers.ReadOnlyField(source='send_to.username')
     created_by_username = serializers.ReadOnlyField(source='created_by.username')
+    last_message = serializers.SerializerMethodField(method_name= 'get_last_message')
     class Meta: 
         model = Conversation
-        fields = ['id', 'send_to','send_to_username',  'created_by', 'created_by_username']
+        fields = ['id','name', 'send_to','send_to_username',  
+        'created_by', 'created_by_username','last_message' ]
+
+    def get_last_message(self, conversation):
+        return MessageSerializer(conversation.message.last()).data
+
 
 class MessageSerializer(serializers.ModelSerializer):
     sender_username = serializers.ReadOnlyField(source='sender.username')
     receiver_username = serializers.ReadOnlyField(source='receiver.username')
     class Meta:
         model = Message
-        fields = ['conversation', 'sender','sender_username', 'receiver_username', 'receiver', 'created_at', 'message']
+        fields = ['conversation', 'sender','sender_username', 
+        'receiver_username', 'receiver', 'created_at', 'message']
