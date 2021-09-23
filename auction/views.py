@@ -378,12 +378,12 @@ class UserOrders(generics.ListAPIView):
         queryset = Order.objects.filter(order_owner=userid)
         return queryset
 
-class UserConversations(generics.ListAPIView):
+class UserConversations(generics.ListCreateAPIView):
     serializer_class= ConversationSerializer
 
     def get_queryset(self):
         userid = self.kwargs['pk']
-        queryset = Conversation.objects.filter(Q(created_by = userid)| Q(send_to = userid) )
+        queryset = Conversation.objects.filter(Q(created_by = userid)| Q(send_to = userid)).order_by('-modified_at')
         return queryset
 
 class ConversationMessages(generics.ListCreateAPIView):
